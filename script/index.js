@@ -26,12 +26,13 @@ const displayLevelWord = (words) => {
     }
 
     words.forEach(word => {
+        // handled wrror with truthy - ternary
         const card = document.createElement("div");
         card.innerHTML = `
         <div class="bg-white rounded-xl text-center py-10 px-12">
-            <h2 class="font-bold text-2xl">${word.word}</h2>
+            <h2 class="font-bold text-2xl">${word.word ? word.word : "শব্দ পাওয়া যাইনি"}</h2>
             <p class="font-medium text-lg pt-3 pb-5">Meaning / Pronunciation</p>
-            <div class="font-semibold text-xl opacity-80">"${word.meaning} / ${word.pronunciation}"</div>
+            <div class="font-semibold text-xl opacity-80">"${word.meaning ? word.meaning : "অর্থ পাওয়া যাইনি"} / ${word.pronunciation ? word.pronunciation : "উচ্চারণ পাওয়া যাইনি"}"</div>
             <div class="flex justify-between items-center mt-9">
                 <button class="btn bg-[#1a90ff22] rounded-lg px-3 py-4 hover:bg-[#1a90ff80]"><i class="fa-solid fa-circle-info"></i></button>
                 <button class="btn bg-[#1a90ff20] rounded-lg px-3 py-4 hover:bg-[#1a90ff80]"><i class="fa-solid fa-volume-high"></i></button>
