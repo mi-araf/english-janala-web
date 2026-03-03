@@ -1,3 +1,9 @@
+// for synonyms in modal
+const createElements = (arr) => {
+    const htmlElements = arr.map(el => `<span class="opacity-80 bg-[#EDF7FF] p-2">${el}</span>`);
+    return htmlElements.join(` &nbsp;&nbsp; `);
+}
+
 const loadLessons = () => {
     fetch("https://openapi.programming-hero.com/api/levels/all")
         .then(res => res.json())
@@ -22,6 +28,40 @@ const loadLevelWord = (id) => {
             displayLevelWord(data.data);
         })
 }
+
+const loadWordDetail = async(id) => {
+    const url = `https://openapi.programming-hero.com/api/word/${id}`;
+
+    const res = await fetch(url);
+    const details = await res.json();
+    displayWordDetails(details.data);
+}
+const displayWordDetails = (word) => {
+    const detailsBox = document.getElementById('details-container');
+    detailsBox.innerHTML = `
+    <div>
+        <h2 class="font-semibold text-2xl">${word.word} (<i class="fa-solid fa-microphone-lines"></i> ${word.pronunciation})</h2>
+    </div>
+    <div>
+        <h3 class="font-semibold pb-1">Meaning</h3>
+        <p>${word.meaning}</p>
+    </div>
+    <div>
+        <em class="">${word.partsOfSpeech}</em>
+    </div>
+    <div>
+        <h3 class="font-semibold pb-1">Example</h3>
+        <p>${word.sentence}</p>
+    </div>
+    <div>
+        <h3 class="font-bangla font-medium pb-3">সমার্থক শব্দ গুলো</h3>
+        <div>${createElements(word.synonyms)}</div>
+    </div>
+    `;
+    // <span class="opacity-80 bg-[#EDF7FF] p-2">${word.synonyms}</span>
+    document.getElementById('word_modal').showModal();
+}
+
 const displayLevelWord = (words) => {
     const wordContainer = document.getElementById('word-container');
     wordContainer.innerHTML = '';
@@ -46,7 +86,7 @@ const displayLevelWord = (words) => {
             <p class="font-medium text-lg pt-3 pb-5">Meaning / Pronunciation</p>
             <div class="font-semibold text-xl opacity-80">"${word.meaning ? word.meaning : "অর্থ পাওয়া যাইনি"} / ${word.pronunciation ? word.pronunciation : "উচ্চারণ পাওয়া যাইনি"}"</div>
             <div class="flex justify-between items-center mt-9">
-                <button class="btn bg-[#1a90ff22] rounded-lg px-3 py-4 hover:bg-[#1a90ff80]"><i class="fa-solid fa-circle-info"></i></button>
+                <button onclick="loadWordDetail(${word.id})" class="btn bg-[#1a90ff22] rounded-lg px-3 py-4 hover:bg-[#1a90ff80]"><i class="fa-solid fa-circle-info"></i></button>
                 <button class="btn bg-[#1a90ff20] rounded-lg px-3 py-4 hover:bg-[#1a90ff80]"><i class="fa-solid fa-volume-high"></i></button>
             </div>
         </div>
