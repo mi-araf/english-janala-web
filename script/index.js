@@ -4,6 +4,16 @@ const createElements = (arr) => {
     return htmlElements.join(` &nbsp;&nbsp; `);
 }
 
+const manageSpinner = (status) => {
+    if (status == true) {
+        document.getElementById("spinner").classList.remove("hidddenn");
+        document.getElementById("word-container").classList.add("hidddenn");
+    } else {
+        document.getElementById("word-container").classList.remove("hidddenn");
+        document.getElementById("spinner").classList.add("hidddenn");
+    }
+}
+
 const loadLessons = () => {
     fetch("https://openapi.programming-hero.com/api/levels/all")
         .then(res => res.json())
@@ -16,6 +26,7 @@ function removeActive() {
 }
 
 const loadLevelWord = (id) => {
+    manageSpinner(true);
     const url = `https://openapi.programming-hero.com/api/level/${id}`;
     fetch(url)
         .then(res => res.json())
@@ -74,6 +85,7 @@ const displayLevelWord = (words) => {
             <h2 class="text-3xl font-medium text-[#292524]">নেক্সট Lesson এ যান</h2>
         </div>
         `;
+        manageSpinner(false);
         return;
     }
 
@@ -87,12 +99,13 @@ const displayLevelWord = (words) => {
             <div class="font-semibold text-xl opacity-80">"${word.meaning ? word.meaning : "অর্থ পাওয়া যাইনি"} / ${word.pronunciation ? word.pronunciation : "উচ্চারণ পাওয়া যাইনি"}"</div>
             <div class="flex justify-between items-center mt-9">
                 <button onclick="loadWordDetail(${word.id})" class="btn bg-[#1a90ff22] rounded-lg px-3 py-4 hover:bg-[#1a90ff80]"><i class="fa-solid fa-circle-info"></i></button>
-                <button class="btn bg-[#1a90ff20] rounded-lg px-3 py-4 hover:bg-[#1a90ff80]"><i class="fa-solid fa-volume-high"></i></button>
+                <button onclick="pronounceWord('${word.word}')" class="btn bg-[#1a90ff20] rounded-lg px-3 py-4 hover:bg-[#1a90ff80]"><i class="fa-solid fa-volume-high"></i></button>
             </div>
         </div>
         `;
         wordContainer.append(card);
-    })
+    });
+    manageSpinner(false);
 }
 
 const displayLessosn = (lessons) => {
@@ -113,3 +126,27 @@ const displayLessosn = (lessons) => {
     
 }
 loadLessons()
+
+// implement search 
+document.getElementById('btn-search').addEventListener('click', () => {
+    removeActive();
+
+    const input = document.getElementById('input-search');
+    const searchValue = input.value.trim().toLowerCase();
+    console.log(searchValue);
+
+    fetch("https://openapi.programming-hero.com/api/words/all")
+        .then(res => res.json())
+        .then(data => {
+            const allWords = data.data;
+            const filterWords = allWords.filter(word => word.word.toLowerCase().includes(searchValue));
+            displayLevelWord(filterWords);
+        });
+});
+
+// to listen the pronounciation
+function pronounceWord(word) {
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = "en-EN"; // English
+    window.speechSynthesis.speak(utterance);
+}
